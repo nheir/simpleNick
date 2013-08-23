@@ -1,13 +1,21 @@
 package io.github.nheir.simplenick;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SimpleNick extends JavaPlugin {
+    private FileConfiguration nickConf = null;
+    private File nickFile = null;
+    
 	@Override
     public void onEnable(){
 		PluginManager pm = this.getServer().getPluginManager();
@@ -15,7 +23,7 @@ public final class SimpleNick extends JavaPlugin {
         Player ps[] = this.getServer().getOnlinePlayers();
         for(Player p : ps)
         {
-        	String s = this.getConfig().getString(p.getPlayerListName());
+        	String s = this.getCustomConfig().getString(p.getPlayerListName());
         	if(s != null)
         	{
         		p.setDisplayName(ChatColor.translateAlternateColorCodes('&', s)+ChatColor.RESET);
@@ -25,7 +33,7 @@ public final class SimpleNick extends JavaPlugin {
  
     @Override
     public void onDisable() {
-    	this.saveConfig();
+    	this.saveCustomConfig();
     }
     
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -53,7 +61,7 @@ public final class SimpleNick extends JavaPlugin {
     				else
     				{
     					player.setDisplayName(nickcolor);
-    					this.getConfig().set(player.getPlayerListName(), nick);
+    					this.getCustomConfig().set(player.getPlayerListName(), nick);
     				}
     			}
     		}
@@ -61,6 +69,30 @@ public final class SimpleNick extends JavaPlugin {
     	}
     	return false;
     }
+    
+    public void reloadCustomConfig() {
+        if (nickFile == null) {
+        	nickFile = new File(getDataFolder(), "nick.yml");
+        }
+        nickConf = YamlConfiguration.loadConfiguration(nickFile);
+    }
 
+    public FileConfiguration getCustomConfig() {
+        if (nickConf == null) {
+            this.reloadCustomConfig();
+        }
+        return nickConf;
+    }
+
+    public void saveCustomConfig() {
+        if (nickConf == null || nickFile == null) {
+        	return;
+        }
+        try {
+            getCustomConfig().save(nickFile);
+        } catch (IOException ex) {
+            this.getLogger().log(Level.SEVERE, "Could not save config to " + nickFile, ex);
+        }
+    }
 
 }
