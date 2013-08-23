@@ -1,6 +1,6 @@
 name: SimpleNick
 main: io.github.nheir.simplenick.SimpleNick
-version: 0.5
+version: 0.6
 
 commands:
   nick:

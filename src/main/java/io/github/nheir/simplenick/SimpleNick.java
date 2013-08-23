@@ -10,7 +10,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class SimpleNick extends JavaPlugin {
 	@Override
     public void onEnable(){
-		getLogger().info("onEnable has been invoked!");
 		PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvents(new SimpleNickListener(this), this);
         Player ps[] = this.getServer().getOnlinePlayers();
