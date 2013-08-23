@@ -1,0 +1,15 @@
+name: SimpleNick
+main: io.github.nheir.simplenick.SimpleNick
+version: 0.5
+
+commands:
+  nick:
+    description: Set/unset a nickname
+    usage: /nick [nickname]
+    permission: simplenick.nick
+    permission-message: You don't have <permission>
+      
+permissions:
+  simplenick.nick:
+    description: Allow to set or unset nickname
+    default: true
