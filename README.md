@@ -1,8 +1,6 @@
 simpleNick
 ==========
 
-### Welcome to GitHub Pages.
-
 SimpleNick is a simple bukkit plugin to customize the display name of a player.
 There is one command:
 
