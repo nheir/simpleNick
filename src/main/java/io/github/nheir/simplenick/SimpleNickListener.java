@@ -1,10 +1,9 @@
 package io.github.nheir.simplenick;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;;
+import org.bukkit.event.player.PlayerJoinEvent;;
  
 public class SimpleNickListener implements Listener {
  
@@ -15,10 +14,8 @@ public class SimpleNickListener implements Listener {
         }
  
     	@EventHandler
-    	public void onPlayerLogin(PlayerLoginEvent event) {
+    	public void onPlayerLogin(PlayerJoinEvent event) {
     		Player p = event.getPlayer();
-    		String s = plugin.getCustomConfig().getString(p.getPlayerListName());
-	    	if(s != null)
-	    		p.setDisplayName(ChatColor.translateAlternateColorCodes('&', s)+ChatColor.RESET);
+    		plugin.newPlayer(p);
     	}
 }
