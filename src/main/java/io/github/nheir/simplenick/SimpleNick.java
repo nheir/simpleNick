@@ -23,7 +23,7 @@ public final class SimpleNick extends JavaPlugin {
         Player ps[] = this.getServer().getOnlinePlayers();
         for(Player p : ps)
         {
-        	String s = this.getCustomConfig().getString(p.getPlayerListName());
+        	String s = this.getCustomConfig().getString(p.getName());
         	if(s != null)
         	{
         		p.setDisplayName(ChatColor.translateAlternateColorCodes('&', s)+ChatColor.RESET);
@@ -43,7 +43,7 @@ public final class SimpleNick extends JavaPlugin {
     		} else {
     			Player player = (Player) sender;
     			if(args.length == 0)
-    				player.setDisplayName(player.getPlayerListName());
+    				player.setDisplayName(player.getName());
     			else 
     			{
     				StringBuilder builder = new StringBuilder();
@@ -58,10 +58,12 @@ public final class SimpleNick extends JavaPlugin {
     				String nickcolor = ChatColor.translateAlternateColorCodes('&', nick)+ChatColor.RESET;
     				if(ChatColor.stripColor(nickcolor).length() > 20)
     					sender.sendMessage("The nickname is too long >20");
+    				if(ChatColor.stripColor(nickcolor).length() < 3)
+    					sender.sendMessage("The nickname is too short >3");
     				else
     				{
     					player.setDisplayName(nickcolor);
-    					this.getCustomConfig().set(player.getPlayerListName(), nick);
+    					this.getCustomConfig().set(player.getName(), nick);
     				}
     			}
     		}
