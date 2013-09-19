@@ -3,7 +3,7 @@ package io.github.nheir.simplenick;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;;
+import org.bukkit.event.player.PlayerJoinEvent;
  
 public class SimpleNickListener implements Listener {
  

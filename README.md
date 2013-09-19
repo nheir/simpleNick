@@ -23,20 +23,22 @@ There is not config file yet. Nicknames are registered in the file nick.yml
     	description: Allow to set or delete nickname
     	default: true
 
-### Version 0.9 (stable)
+### Version 0.9
 This version is working but a player can set whatever he wants as nickname
 
 ### Version 1.x
-Need some tests with more than 2 players : the following rules have to be tested
 Deny duplicate nickname
 
 Deny nicknames that equal a player name logged:
 * Deny when a player wants to set a nickname which is another logged player's name (colored or not)
 * Remove a player nickname when a player with the same name logs in
 
-### TODO
+Command "Who has `<nickname/player>`?"
+`\nick <a used nickname>`
 
-A command "Who has `<nickname/player>`?"
+Tested with 2 players, any feedback is welcome :-)
+
+### TODO
 
 Control on other player nickname for op
 
@@ -44,3 +46,4 @@ Control on other player nickname for op
 
 Github repo: 
 [nheir/simpleNick](https://github.com/nheir/simpleNick)
+
