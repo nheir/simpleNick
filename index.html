@@ -40,7 +40,7 @@ There is one command:</p>
 
 <p><code>\nick A wonderful nickname</code></p>
 
-<p>There is a limitation of 20 characters without counting color codes.
+<p>There is a limitation of 3-20 characters without counting color codes.
 To delete a nickname:</p>
 
 <p><code>\nick</code></p>
@@ -48,18 +48,43 @@ To delete a nickname:</p>
 <p>There is not config file yet. Nicknames are registered in the file nick.yml</p>
 
 <h3>
-<a name="ideas" class="anchor" href="#ideas"><span class="octicon octicon-link"></span></a>Ideas</h3>
+<a name="permission" class="anchor" href="#permission"><span class="octicon octicon-link"></span></a>Permission</h3>
 
-<p>A command "Who has ?"</p>
+<pre><code>simplenick.nick:
+    description: Allow to set or delete nickname
+    default: true
+</code></pre>
+
+<h3>
+<a name="version-09" class="anchor" href="#version-09"><span class="octicon octicon-link"></span></a>Version 0.9</h3>
+
+<p>This version is working but a player can set whatever he wants as nickname</p>
+
+<h3>
+<a name="version-1x" class="anchor" href="#version-1x"><span class="octicon octicon-link"></span></a>Version 1.x</h3>
 
 <p>Deny duplicate nickname</p>
 
 <p>Deny nicknames that equal a player name logged:</p>
 
 <ul>
-<li> Deny when a player wants to set a nickname which is another logged player's name (colored or not)</li>
-<li> Remove a player nickname when a player with the same name logs in</li>
-</ul>
+<li>Deny when a player wants to set a nickname which is another logged player's name (colored or not)</li>
+<li>Remove a player nickname when a player with the same name logs in</li>
+</ul><p>Command "Who has <code>&lt;nickname/player&gt;</code>?"
+<code>\nick &lt;a used nickname&gt;</code></p>
+
+<p>Tested with 2 players, any feedback is welcome :-)</p>
+
+<h3>
+<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h3>
+
+<p>Control on other player nickname for op</p>
+
+<h3>
+<a name="source" class="anchor" href="#source"><span class="octicon octicon-link"></span></a>Source</h3>
+
+<p>Github repo: 
+<a href="https://github.com/nheir/simpleNick">nheir/simpleNick</a></p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/nheir">nheir</a></p>
