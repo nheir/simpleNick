@@ -2,20 +2,23 @@ package io.github.nheir.simplenick;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.metadata.MetadataValue;
 
-public final class SimpleNick extends JavaPlugin {
+public final class SimpleNick extends JavaPlugin implements TabCompleter {
 	// nick.yml
     private FileConfiguration nickConf = null;
     private File nickFile = null;
@@ -57,7 +60,7 @@ public final class SimpleNick extends JavaPlugin {
     	if (cmd.getName().equals("nick")) {
     		if (!(sender instanceof Player)) {
     			sender.sendMessage("This command can only be run by a player.");
-    		} else {
+    		} else if(sender.hasPermission("simplenick.nick")){
     			Player player = (Player) sender;
     			if(args.length == 0)
     			{
@@ -81,6 +84,46 @@ public final class SimpleNick extends JavaPlugin {
     		return true;
     	}
     	return false;
+    }
+    
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    	if (!command.getName().equalsIgnoreCase("nick")) {
+            return null;
+        }
+    	ArrayList<String> L = new ArrayList<String>();
+    	if(args.length == 0)
+		{
+    		L.addAll(nick2Player.keySet());
+		}
+		else 
+		{
+			StringBuilder builder = new StringBuilder();
+			int size = 0;
+			int a = args.length;
+			for(String s : args) {
+				a--;
+			    builder.append(s);
+			    if(a > 0) {
+			    	builder.append(' ');
+			    	size += 1 + s.length();
+			    }
+			    
+			}
+			String nick = builder.toString();
+			for(String key : nick2Player.keySet())
+			{
+				if(key.startsWith(nick)) {
+					L.add(key.substring(size));
+				}
+			}
+		}
+    	Collections.sort(L, String.CASE_INSENSITIVE_ORDER);
+    	if(sender instanceof Player) {
+    		Player p = (Player) sender;
+    		L.remove(ChatColor.stripColor(p.getDisplayName()));
+    	}
+    	return L;
     }
     
     public boolean newPlayer(Player p) {
@@ -122,13 +165,14 @@ public final class SimpleNick extends JavaPlugin {
 		else if(nick2Player.containsKey(nickuncolor) && !nick2Player.get(nickuncolor).equals(p.getName()))
 			p.sendMessage("This nickname is used by "+nick2Player.get(nickuncolor));
 		else {
-			p.setDisplayName(nickcolor);
-			p.sendMessage(ChatColor.GREEN + "Your nickname is : " + ChatColor.RESET + nickcolor);
 			String prevnick = ChatColor.stripColor(p.getDisplayName());
+			p.setDisplayName(nickcolor);
 			nick2Player.remove(prevnick);
 			nick2Player.put(nickuncolor, p.getName());
-			p.setDisplayName(nickcolor);
 			this.getCustomConfig().set(p.getName(), nick);
+			
+			p.setDisplayName(nickcolor);
+			p.sendMessage(ChatColor.GREEN + "Your nickname is : " + ChatColor.RESET + nickcolor);
 			return true;
 		}
     	return false;
