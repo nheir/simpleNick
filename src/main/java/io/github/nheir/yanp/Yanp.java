@@ -1,4 +1,4 @@
-package io.github.nheir.simplenick;
+package io.github.nheir.yanp;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -18,36 +19,40 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class SimpleNick extends JavaPlugin implements TabCompleter {
+public final class Yanp extends JavaPlugin implements TabCompleter {
 	// nick.yml
     private FileConfiguration nickConf = null;
     private File nickFile = null;
-    // Contains <nickname uncolor, player name> for connected players and players that set a nickname in nick.yml
-    private HashMap<String, String> nick2Player = new HashMap<String, String>();
+    // Contains <nickname uncolor, player> for connected players and players that set a nickname in nick.yml
+    private HashMap<String, OfflinePlayer > nick2Player = new HashMap<String, OfflinePlayer>();
     
 	@Override
     public void onEnable(){
 		PluginManager pm = this.getServer().getPluginManager();
-        pm.registerEvents(new SimpleNickListener(this), this);
-        Player ps[] = this.getServer().getOnlinePlayers();
-        // Import nick.yml
-        for(String p : this.getCustomConfig().getKeys(false))
+        pm.registerEvents(new YanpListener(this), this);
+        if( ! this.getCustomConfig().getKeys(false).contains("players"))
         {
-        	String s = this.getCustomConfig().getString(p);
-        	s = ChatColor.translateAlternateColorCodes('&', s);
-        	s = ChatColor.stripColor(s);
-        	nick2Player.put(s, p);
-        }
-        // Set connected player nicknames
-        for(Player p : ps)
-        {
-        	String s = this.getCustomConfig().getString(p.getName());
-        	if(s != null)
-        	{
-        		p.setDisplayName(ChatColor.translateAlternateColorCodes('&', s)+ChatColor.RESET);
-        	}
-        	else // By default, the nickname of a player is his name
-        		nick2Player.put(p.getName(), p.getName());
+        	for(OfflinePlayer p : this.getServer().getOfflinePlayers())
+	        {
+        		// Migration UUID
+                String s = this.getCustomConfig().getString(p.getName());
+	        	if(s != null)
+	        	{
+	        		getLogger().info("Migrate player: "+p.getName() + " (" + p.getUniqueId().toString()+")");
+	        		this.getCustomConfig().set(p.getUniqueId().toString(), s);
+		        	this.getCustomConfig().set(p.getName(), null);
+	        	}
+	        	// Import nick.yml
+	        	s = this.getCustomConfig().getString(p.getUniqueId().toString());
+	        	if(s != null)
+	        	{
+	        		if(p.isOnline())
+	        			p.getPlayer().setDisplayName(ChatColor.translateAlternateColorCodes('&', s)+ChatColor.RESET);
+	        		s = ChatColor.translateAlternateColorCodes('&', s);
+		        	s = ChatColor.stripColor(s);
+		        	nick2Player.put(s, p);
+	        	}
+	        }
         }
 	}
  
@@ -60,7 +65,7 @@ public final class SimpleNick extends JavaPlugin implements TabCompleter {
     	if (cmd.getName().equals("nick")) {
     		if (!(sender instanceof Player)) {
     			sender.sendMessage("This command can only be run by a player.");
-    		} else if(sender.hasPermission("simplenick.nick")){
+    		} else if(sender.hasPermission("yanp.nick")){
     			Player player = (Player) sender;
     			if(args.length == 0)
     			{
@@ -127,9 +132,9 @@ public final class SimpleNick extends JavaPlugin implements TabCompleter {
     }
     
     public boolean newPlayer(Player p) {
-    	if(nick2Player.containsValue(p.getName()))
+    	if(nick2Player.containsValue(p))
     	{
-    		String s = this.getCustomConfig().getString(p.getName());
+    		String s = this.getCustomConfig().getString(p.getUniqueId().toString());
 	    	if(s != null)
 	    	{
 	    		p.setDisplayName(ChatColor.translateAlternateColorCodes('&', s)+ChatColor.RESET);
@@ -139,17 +144,12 @@ public final class SimpleNick extends JavaPlugin implements TabCompleter {
     	}
     	if(nick2Player.containsKey(p.getName()))
     	{
-    		Player pb = this.getServer().getPlayer((nick2Player.get(p.getName())));
-    		if(pb != null)
-    		{
-    			pb.sendMessage("Your nickname is disabled because you are using the name of a player");
-    			removeNick(pb);
-    		}
-    		else
-    			removeNick(p.getName());
-	    	return true;
+    		OfflinePlayer pb = nick2Player.get(p.getName());
+    		if(pb.isOnline())
+    			pb.getPlayer().sendMessage("Your nickname is disabled because you are using the name of a player");
+    		removeNick(p.getName());
     	}
-    	nick2Player.put(p.getName(), p.getName());
+    	nick2Player.put(p.getName(), p);
     	return true;
     }
     
@@ -160,16 +160,14 @@ public final class SimpleNick extends JavaPlugin implements TabCompleter {
 			p.sendMessage("The nickname is too short <3");
 		else if(nickuncolor.length() > 20)
 			p.sendMessage("The nickname is too long >20");
-		else if(!nickuncolor.equals(p.getName()) && nick2Player.containsValue(nickuncolor))
-			p.sendMessage("This nickname is the name of a player");
-		else if(nick2Player.containsKey(nickuncolor) && !nick2Player.get(nickuncolor).equals(p.getName()))
-			p.sendMessage("This nickname is used by "+nick2Player.get(nickuncolor));
+		else if(nick2Player.containsKey(nickuncolor) && !nick2Player.get(nickuncolor).getName().equals(p.getName()))
+			p.sendMessage("This nickname is used by "+nick2Player.get(nickuncolor).getName());
 		else {
 			String prevnick = ChatColor.stripColor(p.getDisplayName());
 			p.setDisplayName(nickcolor);
 			nick2Player.remove(prevnick);
-			nick2Player.put(nickuncolor, p.getName());
-			this.getCustomConfig().set(p.getName(), nick);
+			nick2Player.put(nickuncolor, p);
+			this.getCustomConfig().set(p.getUniqueId().toString(), nick);
 			
 			p.setDisplayName(nickcolor);
 			p.sendMessage(ChatColor.GREEN + "Your nickname is : " + ChatColor.RESET + nickcolor);
@@ -184,14 +182,14 @@ public final class SimpleNick extends JavaPlugin implements TabCompleter {
     	String nickuncolor = ChatColor.stripColor(p.getDisplayName());
     	p.setDisplayName(p.getName());
     	removeNick(nickuncolor);
-    	nick2Player.put(p.getName(), p.getName());
+    	nick2Player.put(p.getName(), p);
     	return true;
     }
     
     public boolean removeNick(String nickuncolor) {
-    	String name = nick2Player.get(nickuncolor);
+    	OfflinePlayer p = nick2Player.get(nickuncolor);
     	nick2Player.remove(nickuncolor);
-    	this.getCustomConfig().set(name,null);
+    	this.getCustomConfig().set(p.getUniqueId().toString(),null);
     	return true;
     }
     

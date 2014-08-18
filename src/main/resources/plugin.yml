@@ -1,6 +1,6 @@
-name: SimpleNick
-main: io.github.nheir.simplenick.SimpleNick
-version: 1.2
+name: Yanp
+main: io.github.nheir.yanp.Yanp
+version: 1.3
 
 commands:
   nick:
@@ -10,6 +10,6 @@ commands:
     permission-message: You don't have <permission>
       
 permissions:
-  simplenick.nick:
+  yanp.nick:
     description: Allow to set or unset nickname
     default: true

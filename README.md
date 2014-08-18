@@ -1,7 +1,7 @@
-simpleNick
-==========
+Yet Another Nickname Plugin
+===========================
 
-SimpleNick is a simple bukkit plugin to customize the display name of a player.
+Yanp is a simple bukkit plugin to customize the display name of a player.
 There is one command:
 
 `\nick [nickname]`
@@ -19,7 +19,7 @@ There is not config file yet. Nicknames are registered in the file nick.yml
 
 ### Permission
 
-    simplenick.nick:
+    yanp.nick:
     	description: Allow to set or delete nickname
     	default: true
 

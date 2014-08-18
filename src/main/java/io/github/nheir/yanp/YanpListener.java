@@ -1,15 +1,15 @@
-package io.github.nheir.simplenick;
+package io.github.nheir.yanp;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
  
-public class SimpleNickListener implements Listener {
+public class YanpListener implements Listener {
  
-        public SimpleNick plugin;
+        public Yanp plugin;
        
-        public SimpleNickListener(SimpleNick instance) {
+        public YanpListener(Yanp instance) {
                 plugin = instance;
         }
  
